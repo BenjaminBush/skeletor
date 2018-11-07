@@ -35,6 +35,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.agent not in globals():
+        print(globals())
         raise ValueError('[run] Agent {} not found.'.format(args.agent))
     SpecifiedAgent = globals()[args.agent]
 
