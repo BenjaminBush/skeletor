@@ -21,12 +21,11 @@ def training_thread(agent, Nmax, env, action_dim, f, summary_writer, tqdm, facto
         actions, states, rewards = [], [], []
         while not done:
             # Actor picks an action (following the policy)
-            a = agent.policy_action(np.expand_dims(old_state, axis=0))
+            action = agent.policy_action(np.expand_dims(old_state, axis=0))[0]
             # Retrieve new state, reward, and whether the state is terminal
-            print("About to take action {}".format(a))
-            new_state, r, done, _ = env.step(a)
+            new_state, r, done, _ = env.step(action)
             # Memorize (s, a, r) for training
-            actions.append(to_categorical(a, action_dim))
+            actions.append(action)
             rewards.append(r)
             states.append(old_state)
             # Update current state

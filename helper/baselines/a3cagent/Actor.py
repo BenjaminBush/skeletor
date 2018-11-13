@@ -36,3 +36,4 @@ class Actor(Agent):
 
         updates = self.rms_optimizer.get_updates(self.model.trainable_weights, [], loss)
         return K.function([self.model.input, self.action_pl, self.advantages_pl], [], updates=updates)
+
