@@ -14,10 +14,18 @@ class TensorforceAgent(Agent):
         self.directory = directory
         self.agent = None
         self.shared_acts = [4,5,6,9,10,13,14,16]
-        self.frame = pd.read_csv('Experimental walking.csv')
+        self.frame = pd.read_csv('Experimental walking.csv', sep=';')
+        act_frame = self.frame.drop(['Pelvic Tilt', 'Pelvic Up/Down Obl',
+            'Pelvic Int/Ext Rot', 'Hip Flex/Ext', 'Hip Flex/Ext (L)', 'Hip Ad/Ab',
+            'Hip Ad/Ab (L)', 'Hip Int/Ext Rot', 'Hip Int/Ext Rot (L)',
+            'Knee Flex/Ext','Knee Flex/Ext (L)', 'Ankle Dorsi/Plant',
+            'Ankle Dorsi/Plant (L)'],axis=1)
 
-        self.exp_model = LinearRegression()
-
+        obs_frame = self.frame.drop(['rect_fem_r', 'rect_fem_l', 'hamstrings_r',
+        'hamstrings_l', 'bifemsh_r', 'bifemsh_l', 'tib_ant_l', 'gastroc_l'],
+        axis=1)
+        self.linreg = LinearRegression()
+        self.linreg.fit(obs_frame.get_values(), act_frame.get_values())
         
 
     def train(self, env, nb_steps):
@@ -39,10 +47,8 @@ class TensorforceAgent(Agent):
             while not done:
                 action = self.agent.act(obs)
                 obs, rew, done, info = env.step(action)
-                recommend
-                mod_rew += exp_comp(obs, action, recommend, scaling = 
-100.0 - (step_count * 0.00002)  #ends at 5 million
-                total_rew += rew
+                predicted_action = predict_action(obs)
+                mod_rew += exp_comp(action, predicted_action, scaling = 100.0 - (step_count * 0.00002)                  total_rew += rew
                 if step_count < 5000000:
                     self.agent.observe(reward=mod_rew, terminal=done)
                 else:
@@ -126,7 +132,18 @@ class TensorforceAgent(Agent):
     def act(self, obs):
         return self.agent.act(obs)
 
-    def exp_comp(obs, act_vec, exp_act_vec, scaling=1):
-        rmse = math.sqrt(sum([(act_vec[i] - exp_act_vec[i])**2 for i in 
-shared_acts]) / len(self.shared_acts))
+    def shrink_act(vec): #hard-coded to remove actions we can't predict 
+        return [vec[i] for i in self.shared_acts]
+
+    def exp_comp(act_vec, exp_act_vec, scaling=1):
+        rmse = math.sqrt(sum([(act_vec[i] - exp_act_vec[i])**2]) / len(self.shared_acts))
         return ((1 - rmse) * scaling)
+
+    def predict_action(obs):
+        a = obs['joint_pos']
+        red_obs = [a['ground_pelvis'][5], a['ground_pelvis'][3],
+            a['ground_pelvis'][4], a['hip_r'][0], a['hip_l'][0], a['hip_r'][1],
+            a['hip_l'][1], a['hip_r'][2], a['hip_l'][2], a['knee_r'], a['knee_l'],
+            a['ankle_r'], a['ankle_l']]
+
+        return(self.linreg.predict(red_obs)
