@@ -1,5 +1,5 @@
 from .RandomAgent import RandomAgent
 from .FixedActionAgent import FixedActionAgent
-from .A3CAgent import A3CAgent, Actor, Critic
+from .a3cagent import *
 from .keras import *
 from .tensorforce import *
