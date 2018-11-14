@@ -1,5 +1,7 @@
 from .Agent import Agent
 
+
+
 class KerasAgent(Agent):
     def __init__(self, observation_space, action_space, filename):
         """
@@ -12,7 +14,9 @@ class KerasAgent(Agent):
     def train(self, env, nb_steps):
         """
         Train agent for nb_steps.
+
         """
+        
         try:
             print('[train] Loading weights from {}'.format(self.filename))
             self.agent.load_weights(self.filename)
@@ -21,6 +25,7 @@ class KerasAgent(Agent):
             print('[train] Pretrained model {} not found. Starting from scratch.'.format(self.filename))
 
         print('[train] Training \'{}\''.format(type(self).__name__))
+
         self.agent.fit(env, nb_steps=nb_steps, visualize=False, verbose=1,
                        nb_max_episode_steps=env.time_limit, log_interval=1000)
         print('[train] Finished training')
