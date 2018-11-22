@@ -24,6 +24,8 @@ from agents import *
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
 from helper.baselines.utils.networks import get_session
+import os
+from keras.models import load_model
 
 
 if __name__ == '__main__':
@@ -78,6 +80,7 @@ if __name__ == '__main__':
             agent.test(env)
     else:
         set_session(get_session())
+        os.system('rm -rf A3C')
         summary_writer = tf.summary.FileWriter("A3C/tensorboard_" + "ProstheticsEnv")
 
         env = ProstheticsEnv(visualize=args.visualize)
@@ -85,4 +88,7 @@ if __name__ == '__main__':
         state_dim = env.get_observation_space_size()
         action_dim = env.get_action_space_size()
         agent = A3C(action_dim, state_dim, 0)
-        stats = agent.train(env, summary_writer)
+        actor, critic = agent.train(env, summary_writer)
+        actor.model.save('A3CAgent_actor.h5')
+        critic.model.save('A3CAgent_critic.h5')
+

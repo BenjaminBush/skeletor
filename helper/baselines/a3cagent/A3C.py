@@ -97,7 +97,7 @@ class A3C:
         #     state_dim = envs[0].get_state_size()
         #     action_dim = gym.make(args.env).action_space.n
         n_threads = 1
-        nb_episodes = 1000
+        nb_episodes = 10
         training_interval = 32
         consecutive_frames = 0
 
@@ -128,4 +128,4 @@ class A3C:
             time.sleep(1)
         [t.join() for t in threads]
 
-        return None
+        return self.actor, self.critic
