@@ -7,7 +7,8 @@ import numpy as np
 from tqdm import tqdm
 from keras.models import Model
 from keras import regularizers
-from keras.layers import Input, Dense, Flatten, Reshape
+from keras.layers import Input, Dense, Flatten, Reshape, Conv1D, Conv2D, LSTM
+from keras import backend
 
 from .Critic import Critic
 from .Actor import Actor
@@ -51,8 +52,16 @@ class A3C:
         else:
             #x = Flatten()(inp)
             x = inp
-            x = Dense(64, activation='relu')(x)
-            x = Dense(128, activation='relu')(x)
+            #x = Reshape((self.env_dim[1], self.env_dim[2], -1))(inp)
+            # This should be a 3d convolution f000k but not really because it's returned as a list
+            x = Reshape((self.env_dim[0], -1))(x)
+            x = Conv1D(filters=16, kernel_size=8, strides=4, padding="valid", activation='elu')(x)
+            x = Conv1D(filters=32, kernel_size=8, strides=2, padding="valid", activation='elu')(x)
+            x = Flatten()(x)
+            x = Dense(256, activation='elu')(x)
+            x = Reshape((backend.int_shape(x)[1], -1))(x)
+            x = LSTM(256, activation='elu', return_sequences=True)(x)
+            x = Flatten()(x)
         return Model(inp, x)
 
     def policy_action(self, s):
@@ -87,15 +96,6 @@ class A3C:
     def train(self, env, summary_writer):
 
         # Instantiate one environment per thread
-        # if(args.is_atari):
-        #     envs = [AtariEnvironment(args) for i in range(args.n_threads)]
-        #     state_dim = envs[0].get_state_size()
-        #     action_dim = envs[0].get_action_size()
-        # else:
-        #     envs = [Environment(gym.make(args.env), args.consecutive_frames) for i in range(args.n_threads)]
-        #     [e.reset() for e in envs]
-        #     state_dim = envs[0].get_state_size()
-        #     action_dim = gym.make(args.env).action_space.n
         n_threads = 1
         nb_episodes = 10
         training_interval = 32

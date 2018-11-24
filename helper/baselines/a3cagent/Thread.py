@@ -22,6 +22,9 @@ def training_thread(agent, Nmax, env, action_dim, f, summary_writer, tqdm, facto
         while not done:
             # Actor picks an action (following the policy)
             action = agent.policy_action(np.expand_dims(old_state, axis=0))[0]
+            # Fill NaNs with 0's. Not sure why we are getting nans but this avoids any training issues
+            where_nans = np.isnan(action)
+            action[where_nans] = 0
             # Retrieve new state, reward, and whether the state is terminal
             new_state, r, done, _ = env.step(action)
             # Memorize (s, a, r) for training

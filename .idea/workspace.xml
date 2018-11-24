@@ -3,8 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="63c55975-7e66-4cfd-88dd-09057f4d63f7" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/A3C/tensorboard_ProstheticsEnv/events.out.tfevents.1542903680.xps" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/A3CAgent_actor.h5" beforeDir="false" afterPath="$PROJECT_DIR$/A3CAgent_actor.h5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/A3CAgent_critic.h5" beforeDir="false" afterPath="$PROJECT_DIR$/A3CAgent_critic.h5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/helper/baselines/a3cagent/A3C.py" beforeDir="false" afterPath="$PROJECT_DIR$/helper/baselines/a3cagent/A3C.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run.py" beforeDir="false" afterPath="$PROJECT_DIR$/run.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/helper/baselines/a3cagent/Thread.py" beforeDir="false" afterPath="$PROJECT_DIR$/helper/baselines/a3cagent/Thread.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,42 +19,42 @@
     <session id="411075968">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="3" />
+          <entry key="project.closed" value="4" />
           <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.4" value="1" />
-          <entry key="project.open.time.6" value="2" />
-          <entry key="project.opened" value="4" />
+          <entry key="project.open.time.6" value="3" />
+          <entry key="project.opened" value="5" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="7080" />
+          <entry key="py" value="8254" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="7080" />
+          <entry key="Python" value="8254" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="49" />
+          <entry key="py" value="55" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="49" />
+          <entry key="Python" value="55" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="600">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/run.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="478">
-              <caret line="85" column="20" selection-start-line="85" selection-start-column="20" selection-end-line="85" selection-end-column="20" />
+            <state relative-caret-position="507">
+              <caret line="86" column="33" selection-start-line="86" selection-start-column="33" selection-end-line="86" selection-end-column="33" />
               <folding>
                 <element signature="e#318#333#0" expanded="true" />
               </folding>
@@ -62,8 +65,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/helper/baselines/a3cagent/A3C.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1541">
-              <caret line="130" column="38" selection-start-line="130" selection-start-column="38" selection-end-line="130" selection-end-column="38" />
+            <state relative-caret-position="1425">
+              <caret line="63" column="28" selection-start-line="63" selection-start-column="28" selection-end-line="63" selection-end-column="28" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -71,44 +74,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/miniconda3/envs/opensim-rl/lib/python3.6/site-packages/osim/env/osim.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="9831">
-              <caret line="345" selection-start-line="345" selection-end-line="345" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/helper/baselines/a3cagent/Actor.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1131">
-              <caret line="39" selection-start-line="39" selection-end-line="39" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/helper/baselines/a3cagent/Agent.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="638">
-              <caret line="23" column="25" selection-start-line="23" selection-start-column="25" selection-end-line="23" selection-end-column="25" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/helper/baselines/a3cagent/Thread.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="232">
-              <caret line="11" column="7" selection-start-line="11" selection-start-column="7" selection-end-line="11" selection-end-column="7" />
+            <state relative-caret-position="696">
+              <caret line="24" column="102" selection-start-line="24" selection-start-column="102" selection-end-line="24" selection-end-column="102" />
               <folding>
                 <element signature="e#33#51#0" expanded="true" />
               </folding>
@@ -133,6 +103,7 @@
       <find>make</find>
       <find>print</find>
       <find>episodes</find>
+      <find>stride</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -152,9 +123,9 @@
         <option value="$PROJECT_DIR$/helper/baselines/utils/continuous_environment.py" />
         <option value="$PROJECT_DIR$/helper/baselines/a3cagent/Agent.py" />
         <option value="$PROJECT_DIR$/helper/baselines/a3cagent/Actor.py" />
-        <option value="$PROJECT_DIR$/helper/baselines/a3cagent/Thread.py" />
-        <option value="$PROJECT_DIR$/helper/baselines/a3cagent/A3C.py" />
         <option value="$PROJECT_DIR$/run.py" />
+        <option value="$PROJECT_DIR$/helper/baselines/a3cagent/A3C.py" />
+        <option value="$PROJECT_DIR$/helper/baselines/a3cagent/Thread.py" />
       </list>
     </option>
   </component>
@@ -179,6 +150,24 @@
               <item name="skeletor" type="b2602c69:ProjectViewProjectNode" />
               <item name="skeletor" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="skeletor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="skeletor" type="462c0819:PsiDirectoryNode" />
+              <item name="helper" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="skeletor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="skeletor" type="462c0819:PsiDirectoryNode" />
+              <item name="helper" type="462c0819:PsiDirectoryNode" />
+              <item name="baselines" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="skeletor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="skeletor" type="462c0819:PsiDirectoryNode" />
+              <item name="helper" type="462c0819:PsiDirectoryNode" />
+              <item name="baselines" type="462c0819:PsiDirectoryNode" />
+              <item name="a3cagent" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -187,6 +176,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file:///home/ben/git/skeletor/run.py" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RunDashboard">
@@ -216,8 +206,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="134" y="35" width="3066" height="1765" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13534084" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13699536" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -362,43 +353,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/helper/baselines/RandomAgent.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/helper/baselines/FixedActionAgent.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$USER_HOME$/miniconda3/envs/opensim-rl/lib/python3.6/site-packages/osim/env/osim.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9831">
-          <caret line="345" selection-start-line="345" selection-end-line="345" />
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/agents/DoNothingAgent.py">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/helper/baselines/a3cagent/Agent.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="638">
-          <caret line="23" column="25" selection-start-line="23" selection-start-column="25" selection-end-line="23" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/helper/baselines/RandomAgent.py">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/helper/baselines/a3cagent/Thread.py">
+    <entry file="file://$PROJECT_DIR$/run.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="232">
-          <caret line="11" column="7" selection-start-line="11" selection-start-column="7" selection-end-line="11" selection-end-column="7" />
+        <state relative-caret-position="507">
+          <caret line="86" column="33" selection-start-line="86" selection-start-column="33" selection-end-line="86" selection-end-column="33" />
           <folding>
-            <element signature="e#33#51#0" expanded="true" />
+            <element signature="e#318#333#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/helper/baselines/a3cagent/A3C.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1541">
-          <caret line="130" column="38" selection-start-line="130" selection-start-column="38" selection-end-line="130" selection-end-column="38" />
+        <state relative-caret-position="1425">
+          <caret line="63" column="28" selection-start-line="63" selection-start-column="28" selection-end-line="63" selection-end-column="28" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
@@ -407,7 +384,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/helper/baselines/a3cagent/Actor.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1131">
+        <state relative-caret-position="783">
           <caret line="39" selection-start-line="39" selection-end-line="39" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -415,12 +392,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/run.py">
+    <entry file="file://$PROJECT_DIR$/helper/baselines/a3cagent/Agent.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="478">
-          <caret line="85" column="20" selection-start-line="85" selection-start-column="20" selection-end-line="85" selection-end-column="20" />
+        <state relative-caret-position="667">
+          <caret line="23" column="25" selection-start-line="23" selection-start-column="25" selection-end-line="23" selection-end-column="25" />
           <folding>
-            <element signature="e#318#333#0" expanded="true" />
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/envs/opensim-rl/lib/python3.6/site-packages/osim/env/osim.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="29">
+          <caret line="93" selection-start-line="93" selection-end-line="94" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/helper/baselines/a3cagent/Thread.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="696">
+          <caret line="24" column="102" selection-start-line="24" selection-start-column="102" selection-end-line="24" selection-end-column="102" />
+          <folding>
+            <element signature="e#33#51#0" expanded="true" />
           </folding>
         </state>
       </provider>
