@@ -1,7 +1,7 @@
 from time import time
 from keras.callbacks import TensorBoard
 from keras.models import Sequential, Model
-from keras.layers import Dense, Activation, Flatten, Input, concatenate
+from keras.layers import Dense, Activation, Flatten, Input, concatenate, Conv2D, MaxPooling2D
 from keras.optimizers import Adam, RMSprop
 from rl.policy import LinearAnnealedPolicy, BoltzmannQPolicy, EpsGreedyQPolicy
 from rl.agents import NAFAgent
@@ -24,6 +24,10 @@ class KerasNAFAgent(KerasAgent):
                         name='FirstFlatten'))
         V_model.add(Dense(1024))
         V_model.add(Activation('sigmoid'))
+        
+
+        V_model.add(Dense(1024))
+        V_model.add(Activation('sigmoid'))
         V_model.add(Dense(1024))
         V_model.add(Activation('sigmoid'))
         V_model.add(Dense(1024))
@@ -35,6 +39,8 @@ class KerasNAFAgent(KerasAgent):
         mu_model = Sequential()
         mu_model.add(Flatten(input_shape=(1,) + observation_space.shape,
                          name='FirstFlatten'))
+        mu_model.add(Dense(1024))
+        mu_model.add(Activation('sigmoid'))
         mu_model.add(Dense(1024))
         mu_model.add(Activation('sigmoid'))
         mu_model.add(Dense(1024))
@@ -63,9 +69,9 @@ class KerasNAFAgent(KerasAgent):
 
         # Setup Keras RL's NAFAgent
         memory = SequentialMemory(limit=1000, window_length=1)
-        #random_process = OrnsteinUhlenbeckProcess(theta=.15, mu=0., sigma=.3, size=nb_actions)
+        random_process = OrnsteinUhlenbeckProcess(theta=.15, mu=0., sigma=.3, size=nb_actions)
         self.agent = NAFAgent(nb_actions=nb_actions, V_model=V_model, L_model=L_model, mu_model=mu_model,
-                               memory=memory, nb_steps_warmup=32,
+                               memory=memory, nb_steps_warmup=32, random_process = random_process,
                                gamma=.99, target_model_update=1e-3)   
         self.agent.compile(Adam(lr=1e-3))
 
