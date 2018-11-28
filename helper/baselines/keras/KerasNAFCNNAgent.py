@@ -18,7 +18,6 @@ class KerasNAFCNNAgent(KerasAgent):
         nb_actions = action_space.shape[0]
         
 
-        lstm_out = 20
         V_model = Sequential()
         V_model.add(Flatten(input_shape=(1,) + observation_space.shape))
         V_model.add(Reshape((14,25)))
@@ -59,13 +58,11 @@ class KerasNAFCNNAgent(KerasAgent):
         x = Dropout(0.1)(x)
         x = MaxPooling1D(pool_size=2)(x)
         x = Flatten()(x)
-        x = Activation('sigmoid')(x)
+        x = Activation('relu')(x)
         x = Dense(1024)(x)
-        x = Activation('sigmoid')(x)
-        x = Dense(1024)(x)
-        x = Activation('sigmoid')(x)
+        x = Activation('relu')(x)
         x = Dense(((nb_actions * nb_actions + nb_actions) // 2))(x)
-        x = Activation('sigmoid', name='L_final')(x)
+        x = Activation('tanh', name='L_final')(x)
         L_model = Model(inputs=[action_input, observation_input], outputs=x)
 
 
