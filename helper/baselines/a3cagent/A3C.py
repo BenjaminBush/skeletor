@@ -5,7 +5,7 @@ import threading
 import numpy as np
 
 from tqdm import tqdm
-from keras.models import Model
+from keras.models import Model, load_model
 from keras import regularizers
 from keras.layers import Input, Dense, Flatten, Reshape, Conv1D, Conv2D, LSTM
 from keras import backend
@@ -73,6 +73,12 @@ class A3C:
         #return np.random.choice(np.arange(self.act_dim), 1, p=self.actor.predict(s)).ravel()
         return preds
 
+    def act(self, observation):
+        observation = np.asarray(observation)
+        preds = self.actor.predict(observation)
+        preds = np.asarray(preds)
+        return preds
+
     def discount(self, r, done, s):
         """ Compute the gamma-discounted rewards over an episode
         """
@@ -96,8 +102,8 @@ class A3C:
     def train(self, env, summary_writer):
 
         # Instantiate one environment per thread
-        n_threads = 1
-        nb_episodes = 10
+        n_threads = 4
+        nb_episodes = 500
         training_interval = 32
         consecutive_frames = 0
 
@@ -129,3 +135,32 @@ class A3C:
         [t.join() for t in threads]
 
         return self.actor, self.critic
+
+    def pred_reshape(self, x):
+        inp_dim = self.env_dim
+        if len(x.shape) < 4 and len(inp_dim) > 2: return np.expand_dims(x, axis=0)
+        elif len(x.shape) < 2: return np.expand_dims(x, axis=0)
+        else: return x
+
+    def test(self, env):
+        """
+        Run agent locally.
+        """
+        print('[test] Running \'{}\''.format(type(self).__name__))
+        observation = env.reset()
+
+        model = load_model('A3CAgent_actor.h5')
+
+        total_reward = 0
+        done = False
+        while not done:
+            observation = np.asarray(observation)
+            observation = self.pred_reshape(observation)
+            action = model.predict(observation)
+            action = np.asarray(action)[0]
+            # action = model.predict(observation)[0]
+            observation, reward, done, info = env.step(action)
+            total_reward += reward
+
+        print('[test] Total Reward of \'{}\': {}'.format(type(self).__name__,
+                                                        total_reward))

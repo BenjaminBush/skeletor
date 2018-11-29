@@ -37,6 +37,7 @@ if __name__ == '__main__':
                         help='submit agent to crowdAI server')
     parser.add_argument('-v', '--visualize', action='store_true', default=False,
                         help='render the environment locally')
+    parser.add_argument('-test', '--test', action='store', dest='test', help='Test the agent locally')
     args = parser.parse_args()
 
     if args.agent not in globals():
@@ -79,16 +80,23 @@ if __name__ == '__main__':
             agent = SpecifiedAgent(env.observation_space, env.action_space)
             agent.test(env)
     else:
-        set_session(get_session())
-        os.system('rm -rf A3C')
-        summary_writer = tf.summary.FileWriter("A3C/tensorboard_" + "ProstheticsEnv")
+        if args.test:
+            env = ProstheticsEnv(visualize=args.visualize)
+            observation = env.reset()
+            state_dim = env.get_observation_space_size()
+            action_dim = env.get_action_space_size()
+            agent = A3C(action_dim, state_dim, 0)
+            agent.test(env)
+        else:
+            set_session(get_session())
+            os.system('rm -rf A3C')
+            summary_writer = tf.summary.FileWriter("A3C/tensorboard_" + "ProstheticsEnv")
 
-        env = ProstheticsEnv(visualize=args.visualize)
-        observation = env.reset()
-        state_dim = env.get_observation_space_size()
-        action_dim = env.get_action_space_size()
-        agent = A3C(action_dim, state_dim, 0)
-        actor, critic = agent.train(env, summary_writer)
-        actor.model.save('A3CAgent_actor.h5')
-        critic.model.save('A3CAgent_critic.h5')
-
+            env = ProstheticsEnv(visualize=args.visualize)
+            observation = env.reset()
+            state_dim = env.get_observation_space_size()
+            action_dim = env.get_action_space_size()
+            agent = A3C(action_dim, state_dim, 0)
+            actor, critic = agent.train(env, summary_writer)
+            actor.model.save('A3CAgent_actor.h5')
+            critic.model.save('A3CAgent_critic.h5')
