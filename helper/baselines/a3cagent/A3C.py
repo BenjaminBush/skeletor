@@ -164,3 +164,16 @@ class A3C:
 
         print('[test] Total Reward of \'{}\': {}'.format(type(self).__name__,
                                                         total_reward))
+
+    def get_linreg_rmse(self, obs, action):
+        #keep only the muscles, joints we can predict
+        small_action = [action[i] for i in [4,5,6,9,10,13,14,16]]
+        small_obs = [obs[i] for i in [206,204,205,210,207,211,208,212,209,
+            214,213,216,215]]
+        for i in range(len(small_obs)):
+            small_obs[i] = small_obs[i] * (3.14159 / 180)
+            if i in [0,1,5,6]:
+                small_obs[i] = small_obs[i] * -1
+        exp_action = self.linreg.predict([small_obs]))
+        return np.sqrt(sum([small_action[i] - exp_action[i] for i in
+            range(len(exp_action))] / len(exp_action))
