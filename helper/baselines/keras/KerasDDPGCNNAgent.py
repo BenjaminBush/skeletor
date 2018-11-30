@@ -6,6 +6,7 @@ from rl.agents import DDPGAgent
 from rl.memory import SequentialMemory
 from rl.random import OrnsteinUhlenbeckProcess
 
+
 from ...templates import KerasAgent
 
 
@@ -23,8 +24,10 @@ class KerasDDPGCNNAgent(KerasAgent):
         # Actor network
         actor = Sequential()
         actor.add(Flatten(input_shape=(1,) + observation_space.shape))
-        actor.add(Reshape((14,25)))
-        actor.add(Conv1D(filters=32, kernel_size=8, activation='relu'))
+        actor.add(Dense(1024))
+        actor.add(Activation('relu'))
+        actor.add(Reshape((32,32)))
+        actor.add(Conv1D(filters=32, kernel_size=4, activation='relu'))
         actor.add(Dropout(0.1))
         actor.add(MaxPooling1D(pool_size=2))
         actor.add(Flatten())
@@ -40,12 +43,10 @@ class KerasDDPGCNNAgent(KerasAgent):
         x = concatenate([action_input, flattened_observation])
         x = Dense(1024)(x)
         x = Reshape((32,32))(x)
-        x = Conv1D(filters=32, kernel_size=8, activation='relu')(x)
+        x = Conv1D(filters=32, kernel_size=4, activation='relu')(x)
         x = Dropout(0.1)(x)
         x = MaxPooling1D(pool_size=2)(x)
         x = Flatten()(x)
-        x = Activation('relu')(x)
-        x = Dense(64)(x)
         x = Activation('relu')(x)
         x = Dense(64)(x)
         x = Activation('relu')(x)
