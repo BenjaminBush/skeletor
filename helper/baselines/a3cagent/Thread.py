@@ -19,6 +19,7 @@ def training_thread(agent, Nmax, env, action_dim, f, summary_writer, tqdm, facto
         time, cumul_reward, done = 0, 0, False
         old_state = env.reset()
         actions, states, rewards = [], [], []
+        gamma = 0.999
         while not done:
             # Actor picks an action (following the policy)
             action = agent.policy_action(np.expand_dims(old_state, axis=0))[0]
@@ -27,6 +28,8 @@ def training_thread(agent, Nmax, env, action_dim, f, summary_writer, tqdm, facto
             action[where_nans] = 0
             # Retrieve new state, reward, and whether the state is terminal
             new_state, r, done, _ = env.step(action)
+            r += (2*gamma)
+            gamma *= gamma
             # Memorize (s, a, r) for training
             actions.append(action)
             rewards.append(r)

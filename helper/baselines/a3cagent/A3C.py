@@ -7,7 +7,7 @@ import numpy as np
 from tqdm import tqdm
 from keras.models import Model, load_model
 from keras import regularizers
-from keras.layers import Input, Dense, Flatten, Reshape, Conv1D, Conv2D, LSTM
+from keras.layers import Input, Dense, Flatten, Reshape, Conv1D, MaxPooling1D, LSTM, Dropout, BatchNormalization, Activation
 from keras import backend
 
 from .Critic import Critic
@@ -50,18 +50,68 @@ class A3C:
             x = conv_block(x, 32, (2, 2))
             x = Flatten()(x)
         else:
-            #x = Flatten()(inp)
+            # CNN Score = 71, reward+=2 -> -72 (did not converge after 250)
+            # x = inp
+            # x = Reshape((self.env_dim[0], -1))(x)
+            # x = Conv1D(filters=32, kernel_size=8, strides=2)(x)
+            # x = BatchNormalization()(x)
+            # x = Activation("relu")(x)
+            # x = MaxPooling1D(pool_size=2)(x)
+            # x = Conv1D(filters=16, kernel_size=8, strides=2)(x)
+            # x = BatchNormalization()(x)
+            # x = Activation("relu")(x)
+            # x = MaxPooling1D(pool_size=2)(x)
+            # x = BatchNormalization()(x)
+            # x = Conv1D(filters=8, kernel_size=8, strides=1, padding="valid")(x)
+            # x = BatchNormalization()(x)
+            # x = Activation("relu")(x)
+            # x = Flatten()(x)
+            # x = Dropout(0.4)(x)
+            # x = Dense(128, activation='relu')(x)
+            # x = Reshape((backend.int_shape(x)[1], -1))(x)
+            # x = Flatten()(x)
+
+            # LSTM + reward +=2: Score = 143
+            # x = inp
+            # x = Reshape((self.env_dim[0], -1))(x)
+            # x = LSTM(256, activation='relu', return_sequences=True)(x)
+            # x = LSTM(128, activation='relu', return_sequences=True)(x)
+            # x = Dense(128, activation='relu')(x)
+            # x = Dropout(0.4)(x)
+            # x = Dense(64, activation='relu')(x)
+            # x = Reshape((backend.int_shape(x)[1], -1))(x)
+            # x = Flatten()(x)
+
+            # Dense (-34)
+            # x = inp
+            # x = Reshape((self.env_dim[0], -1))(x)
+            # x = Dense(1024, activation='relu')(x)
+            # x = Reshape((backend.int_shape(x)[1], -1))(x)
+            # x = Flatten()(x)
+
             x = inp
-            #x = Reshape((self.env_dim[1], self.env_dim[2], -1))(inp)
-            # This should be a 3d convolution f000k but not really because it's returned as a list
             x = Reshape((self.env_dim[0], -1))(x)
-            x = Conv1D(filters=16, kernel_size=8, strides=4, padding="valid", activation='elu')(x)
-            x = Conv1D(filters=32, kernel_size=8, strides=2, padding="valid", activation='elu')(x)
+            x = Conv1D(filters=32, kernel_size=8, strides=2)(x)
+            x = BatchNormalization()(x)
+            x = Activation("relu")(x)
+            x = MaxPooling1D(pool_size=2)(x)
+            x = Conv1D(filters=16, kernel_size=8, strides=2)(x)
+            x = BatchNormalization()(x)
+            x = Activation("relu")(x)
+            x = MaxPooling1D(pool_size=2)(x)
+            x = BatchNormalization()(x)
+            x = Conv1D(filters=8, kernel_size=8, strides=1, padding="valid")(x)
+            x = BatchNormalization()(x)
+            x = Activation("relu")(x)
             x = Flatten()(x)
-            x = Dense(256, activation='elu')(x)
+            x = Dropout(0.4)(x)
             x = Reshape((backend.int_shape(x)[1], -1))(x)
-            x = LSTM(256, activation='elu', return_sequences=True)(x)
+            x = LSTM(1024, activation='relu', return_sequences=True)(x)
+            x = Dropout(0.2)(x)
+            x = Dense(128, activation='relu')(x)
+            x = Reshape((backend.int_shape(x)[1], -1))(x)
             x = Flatten()(x)
+
         return Model(inp, x)
 
     def policy_action(self, s):
@@ -149,7 +199,7 @@ class A3C:
         print('[test] Running \'{}\''.format(type(self).__name__))
         observation = env.reset()
 
-        model = load_model('A3CAgent_actor.h5')
+        model = load_model('C:\\Users\\Ben\\git\\skeletor\\A3CAgent_actor.h5')
 
         total_reward = 0
         done = False
@@ -158,7 +208,8 @@ class A3C:
             observation = self.pred_reshape(observation)
             action = model.predict(observation)
             action = np.asarray(action)[0]
-            # action = model.predict(observation)[0]
+            where_nans = np.isnan(action)
+            action[where_nans] = 0
             observation, reward, done, info = env.step(action)
             total_reward += reward
 
