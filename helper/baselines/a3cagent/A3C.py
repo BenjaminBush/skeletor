@@ -1,14 +1,18 @@
 import sys
 import gym
+import math
 import time
 import threading
 import numpy as np
+import pandas as pd
 
 from tqdm import tqdm
 from keras.models import Model, load_model
 from keras import regularizers
 from keras.layers import Input, Dense, Flatten, Reshape, Conv1D, Conv2D, LSTM
 from keras import backend
+
+from sklearn.linear_model import LinearRegression
 
 from .Critic import Critic
 from .Actor import Actor
@@ -38,6 +42,19 @@ class A3C:
         # Build optimizers
         self.a_opt = self.actor.optimizer()
         self.c_opt = self.critic.optimizer()
+        #linear model
+        self.frame = pd.read_csv('Experimental walking.csv', sep=';')
+        act_frame = self.frame.drop([
+             'Hip Flex/Ext', 'Hip Flex/Ext (L)', 'Hip Ad/Ab',
+            'Hip Ad/Ab (L)', 'Hip Int/Ext Rot', 'Hip Int/Ext Rot (L)',
+            'Knee Flex/Ext', 'Knee Flex/Ext (L)', 'Ankle Dorsi/Plant',
+            'Ankle Dorsi/Plant (L)'], axis=1)
+        obs_frame = self.frame.drop(['rect_fem_r', 'rect_fem_l', 'hamstrings_r',
+            'hamstrings_l', 'bifemsh_r', 'bifemsh_l', 'tib_ant_l', 'gastroc_l'],
+            axis=1)
+        self.linreg = LinearRegression()
+        self.linreg.fit(obs_frame.values, act_frame.values)
+
 
     def buildNetwork(self):
         """ Assemble shared layers
@@ -102,8 +119,8 @@ class A3C:
     def train(self, env, summary_writer):
 
         # Instantiate one environment per thread
-        n_threads = 4
-        nb_episodes = 500
+        n_threads = 6
+        nb_episodes = 10
         training_interval = 32
         consecutive_frames = 0
 
@@ -118,16 +135,9 @@ class A3C:
         factor = 100.0 / (nb_episodes)
         tqdm_e = tqdm(range(nb_episodes), desc='Score', leave=True, unit=" episodes")
 
-        threads = [threading.Thread(
-                target=training_thread,
-                args=(self,
-                    nb_episodes,
-                    envs[i],
-                    action_dim,
-                    training_interval,
-                    summary_writer,
-                    tqdm_e,
-                    factor)) for i in range(n_threads)]
+        threads = [threading.Thread(target=training_thread, args=
+            (self, nb_episodes, envs[i], action_dim, training_interval,
+            summary_writer, tqdm_e, factor, 500.0)) for i in range(n_threads)]
 
         for t in threads:
             t.start()
@@ -167,13 +177,13 @@ class A3C:
 
     def get_linreg_rmse(self, obs, action):
         #keep only the muscles, joints we can predict
-        small_action = [action[i] for i in [4,5,6,9,10,13,14,16]]
-        small_obs = [obs[i] for i in [206,204,205,210,207,211,208,212,209,
-            214,213,216,215]]
+        pred_actions = [4,5,6,9,10,13,14,16]
+        small_action = [[action[i] for i in pred_actions]] #need column vector
+        small_obs = [obs[i] for i in [80,71,81,72,82,73,92,89,65,62]]
         for i in range(len(small_obs)):
             small_obs[i] = small_obs[i] * (3.14159 / 180)
-            if i in [0,1,5,6]:
+            if i in [2,3]:
                 small_obs[i] = small_obs[i] * -1
-        exp_action = self.linreg.predict([small_obs]))
-        return np.sqrt(sum([small_action[i] - exp_action[i] for i in
-            range(len(exp_action))] / len(exp_action))
+        exp_action = self.linreg.predict([small_obs]) #gets column vector
+        return np.sqrt(sum([(small_action[0][i] - exp_action[0][i]) ** 2 for i in
+            range(len(pred_actions)) ]) / len(pred_actions))

@@ -14,8 +14,8 @@ def training_thread(agent, Nmax, env, action_dim, f, summary_writer,
     """
 
     global episode
+    step_count = 0
     while episode < Nmax:
-
         # Reset episode
         time, cumul_reward, done = 0, 0, False
         old_state = env.reset()
@@ -29,10 +29,13 @@ def training_thread(agent, Nmax, env, action_dim, f, summary_writer,
             action[where_nans] = 0
             # Retrieve new state, reward, and whether the state is terminal
             new_state, r, done, _ = env.step(action)
+            step_count += 1
             # Memorize (s, a, r) for training
             actions.append(action)
-            if scaling != 0.0:
-                mod_r = agent.get_linreg_rmse(old_state, action) * scaling
+            if scaling * step_count > 0.0:
+            #CHANGE THIS BACK TO OLD)STATE
+                mod_r = agent.get_linreg_rmse(old_state, action) * (scaling - step_count * 0.1)
+            #to stop modification at 5,000, pass scaling=500
                 mod_rewards.append(r + mod_r)
             rewards.append(r)
             states.append(old_state)
