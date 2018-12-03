@@ -8,18 +8,19 @@ from ..utils.networks import tfSummary
 
 episode = 0
 
-def training_thread(agent, Nmax, env, action_dim, f, summary_writer, tqdm, factor):
+def training_thread(agent, Nmax, env, action_dim, f, summary_writer,
+    tqdm, factor, scaling=0.0):
     """ Build threads to run shared computation across
     """
 
     global episode
+    step_count = 0
     while episode < Nmax:
-
         # Reset episode
         time, cumul_reward, done = 0, 0, False
         old_state = env.reset()
-        actions, states, rewards = [], [], []
-        gamma = 0.999
+        actions, states, rewards, mod_rewards = [], [], [], []
+        #separate mod_rewards so we don't break whatever tqdm does
         while not done:
             # Actor picks an action (following the policy)
             action = agent.policy_action(np.expand_dims(old_state, axis=0))[0]
@@ -28,10 +29,14 @@ def training_thread(agent, Nmax, env, action_dim, f, summary_writer, tqdm, facto
             action[where_nans] = 0
             # Retrieve new state, reward, and whether the state is terminal
             new_state, r, done, _ = env.step(action)
-            r += (2*gamma)
-            gamma *= gamma
+            step_count += 1
             # Memorize (s, a, r) for training
             actions.append(action)
+            if scaling * step_count > 0.0:
+            #CHANGE THIS BACK TO OLD)STATE
+                mod_r = agent.get_linreg_rmse(old_state, action) * (scaling - step_count * 0.1)
+            #to stop modification at 5,000, pass scaling=500
+                mod_rewards.append(r + mod_r)
             rewards.append(r)
             states.append(old_state)
             # Update current state
@@ -40,8 +45,11 @@ def training_thread(agent, Nmax, env, action_dim, f, summary_writer, tqdm, facto
             time += 1
             # Asynchronous training
             if(time%f==0 or done):
-                agent.train_models(states, actions, rewards, done)
-                actions, states, rewards = [], [], []
+                if scaling != 0.0:
+                    agent.train_models(states, actions, mod_rewards,done)
+                else:
+                    agent.train_models(states, actions, rewards, done)
+                actions, states, rewards, mod_rewards = [], [], [], []
 
         # Export results for Tensorboard
         score = tfSummary('score', cumul_reward)

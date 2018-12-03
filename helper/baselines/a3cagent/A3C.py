@@ -1,14 +1,18 @@
 import sys
 import gym
+import math
 import time
 import threading
 import numpy as np
+import pandas as pd
 
 from tqdm import tqdm
 from keras.models import Model, load_model
 from keras import regularizers
-from keras.layers import Input, Dense, Flatten, Reshape, Conv1D, MaxPooling1D, LSTM, Dropout, BatchNormalization, Activation
+from keras.layers import Input, Dense, Flatten, Reshape, Conv1D, Conv2D, LSTM, MaxPooling1D, Dropout, BatchNormalization, Activation
 from keras import backend
+
+from sklearn.linear_model import LinearRegression
 
 from .Critic import Critic
 from .Actor import Actor
@@ -38,6 +42,19 @@ class A3C:
         # Build optimizers
         self.a_opt = self.actor.optimizer()
         self.c_opt = self.critic.optimizer()
+        #linear model
+        self.frame = pd.read_csv('Experimental walking.csv', sep=';')
+        act_frame = self.frame.drop([
+             'Hip Flex/Ext', 'Hip Flex/Ext (L)', 'Hip Ad/Ab',
+            'Hip Ad/Ab (L)', 'Hip Int/Ext Rot', 'Hip Int/Ext Rot (L)',
+            'Knee Flex/Ext', 'Knee Flex/Ext (L)', 'Ankle Dorsi/Plant',
+            'Ankle Dorsi/Plant (L)'], axis=1)
+        obs_frame = self.frame.drop(['rect_fem_r', 'rect_fem_l', 'hamstrings_r',
+            'hamstrings_l', 'bifemsh_r', 'bifemsh_l', 'tib_ant_l', 'gastroc_l'],
+            axis=1)
+        self.linreg = LinearRegression()
+        self.linreg.fit(obs_frame.values, act_frame.values)
+
 
     def buildNetwork(self):
         """ Assemble shared layers
@@ -50,7 +67,15 @@ class A3C:
             x = conv_block(x, 32, (2, 2))
             x = Flatten()(x)
         else:
-            # CNN Score = 71, reward+=2 -> -72 (did not converge after 250)
+
+            # DENSE
+            # x = inp
+            # x = Reshape((self.env_dim[0], -1))(x)
+            # x = Dense(2048, activation='relu')(x)
+            # x = Reshape((backend.int_shape(x)[1], -1))(x)
+            # x = Flatten()(x)
+
+            # CNN
             # x = inp
             # x = Reshape((self.env_dim[0], -1))(x)
             # x = Conv1D(filters=32, kernel_size=8, strides=2)(x)
@@ -67,50 +92,21 @@ class A3C:
             # x = Activation("relu")(x)
             # x = Flatten()(x)
             # x = Dropout(0.4)(x)
-            # x = Dense(128, activation='relu')(x)
+            # x = Dense(256, activation='relu')(x)
             # x = Reshape((backend.int_shape(x)[1], -1))(x)
             # x = Flatten()(x)
 
-            # LSTM + reward +=2: Score = 143
-            # x = inp
-            # x = Reshape((self.env_dim[0], -1))(x)
-            # x = LSTM(256, activation='relu', return_sequences=True)(x)
-            # x = LSTM(128, activation='relu', return_sequences=True)(x)
-            # x = Dense(128, activation='relu')(x)
-            # x = Dropout(0.4)(x)
-            # x = Dense(64, activation='relu')(x)
-            # x = Reshape((backend.int_shape(x)[1], -1))(x)
-            # x = Flatten()(x)
-
-            # Dense (-34)
-            # x = inp
-            # x = Reshape((self.env_dim[0], -1))(x)
-            # x = Dense(1024, activation='relu')(x)
-            # x = Reshape((backend.int_shape(x)[1], -1))(x)
-            # x = Flatten()(x)
-
+            # RNN
             x = inp
             x = Reshape((self.env_dim[0], -1))(x)
-            x = Conv1D(filters=32, kernel_size=8, strides=2)(x)
-            x = BatchNormalization()(x)
-            x = Activation("relu")(x)
-            x = MaxPooling1D(pool_size=2)(x)
-            x = Conv1D(filters=16, kernel_size=8, strides=2)(x)
-            x = BatchNormalization()(x)
-            x = Activation("relu")(x)
-            x = MaxPooling1D(pool_size=2)(x)
-            x = BatchNormalization()(x)
-            x = Conv1D(filters=8, kernel_size=8, strides=1, padding="valid")(x)
-            x = BatchNormalization()(x)
-            x = Activation("relu")(x)
-            x = Flatten()(x)
-            x = Dropout(0.4)(x)
-            x = Reshape((backend.int_shape(x)[1], -1))(x)
-            x = LSTM(1024, activation='relu', return_sequences=True)(x)
-            x = Dropout(0.2)(x)
+            x = LSTM(128, activation='relu', return_sequences=True)(x)
             x = Dense(128, activation='relu')(x)
+            x = Dropout(0.4)(x)
+            x = Dense(64, activation='relu')(x)
             x = Reshape((backend.int_shape(x)[1], -1))(x)
             x = Flatten()(x)
+
+
 
         return Model(inp, x)
 
@@ -168,16 +164,9 @@ class A3C:
         factor = 100.0 / (nb_episodes)
         tqdm_e = tqdm(range(nb_episodes), desc='Score', leave=True, unit=" episodes")
 
-        threads = [threading.Thread(
-                target=training_thread,
-                args=(self,
-                    nb_episodes,
-                    envs[i],
-                    action_dim,
-                    training_interval,
-                    summary_writer,
-                    tqdm_e,
-                    factor)) for i in range(n_threads)]
+        threads = [threading.Thread(target=training_thread, args=
+            (self, nb_episodes, envs[i], action_dim, training_interval,
+            summary_writer, tqdm_e, factor, 25.0)) for i in range(n_threads)]
 
         for t in threads:
             t.start()
@@ -199,7 +188,7 @@ class A3C:
         print('[test] Running \'{}\''.format(type(self).__name__))
         observation = env.reset()
 
-        model = load_model('C:\\Users\\Ben\\git\\skeletor\\A3CAgent_actor.h5')
+        model = load_model('A3CAgent_actor.h5')
 
         total_reward = 0
         done = False
@@ -208,10 +197,22 @@ class A3C:
             observation = self.pred_reshape(observation)
             action = model.predict(observation)
             action = np.asarray(action)[0]
-            where_nans = np.isnan(action)
-            action[where_nans] = 0
+            # action = model.predict(observation)[0]
             observation, reward, done, info = env.step(action)
             total_reward += reward
 
         print('[test] Total Reward of \'{}\': {}'.format(type(self).__name__,
                                                         total_reward))
+
+    def get_linreg_rmse(self, obs, action):
+        #keep only the muscles, joints we can predict
+        pred_actions = [4,5,6,9,10,13,14,16]
+        small_action = [[action[i] for i in pred_actions]] #need column vector
+        small_obs = [obs[i] for i in [80,71,81,72,82,73,92,89,65,62]]
+        for i in range(len(small_obs)):
+            small_obs[i] = small_obs[i] * (3.14159 / 180)
+            if i in [2,3]:
+                small_obs[i] = small_obs[i] * -1
+        exp_action = self.linreg.predict([small_obs]) #gets column vector
+        return np.sqrt(sum([(small_action[0][i] - exp_action[0][i]) ** 2 for i in
+            range(len(pred_actions)) ]) / len(pred_actions))
