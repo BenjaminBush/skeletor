@@ -16,52 +16,6 @@ class Reshape(Layer):
     def tf_apply(self, x, update):
         return tf.keras.layers.Reshape(self.target_shape)(x)
 
-
-class Conv1D(Layer):
-    def __init__(self, filters, kernel_size, strides, **kwargs):
-        super(Conv1D, self).__init__(**kwargs)
-        self.filters = filters
-        self.kernel_size = kernel_size
-        self.strides = strides
-
-    def tf_apply(self, x, update):
-        x = tf.reshape(x, [1, 350])
-        return tf.keras.layers.Conv1D(self.filters, self.kernel_size, self.strides)(x)
-
-class RELU(Layer):
-    def __init__(self, **kwargs):
-        super(RELU, self).__init__(**kwargs)
-
-    def tf_apply(self, x, update):
-        return tf.keras.layers.Activation('relu')(x)
-
-class CNN(Layer):
-    def __init__(self, env_dim, **kwargs):
-        super(CNN, self).__init__(**kwargs)
-        self.env_dim = env_dim
-
-    def tf_apply(self, x, update):
-        # import pdb
-        # pdb.set_trace()
-        x = tf.keras.layers.Reshape((self.env_dim[0], 1))(x)
-        x = tf.keras.layers.Conv1D(filters=32, kernel_size=(8), strides=2)(x)
-        x = tf.keras.layers.BatchNormalization()(x)
-        x = tf.keras.layers.Activation('relu')(x)
-        x = tf.keras.layers.MaxPooling1D(pool_size=2)(x)
-        x = tf.keras.layers.Conv1D(filters=16, kernel_size=(8), strides=2)(x)
-        x = tf.keras.layers.BatchNormalization()(x)
-        x = tf.keras.layers.Activation('relu')(x)
-        x = tf.keras.layers.MaxPooling1D(pool_size=2)(x)
-        x = tf.keras.layers.Conv1D(filters=8, kernel_size=(8), strides=1)(x)
-        x = tf.keras.layers.BatchNormalization()(x)
-        x = tf.keras.layers.Activation('relu')(x)
-        x = tf.keras.layers.Flatten()(x)
-        x = tf.keras.layers.Dropout(0.4)(x)
-        x = tf.keras.layers.Dense(256, activation='relu')(x)
-        x = tf.keras.layers.Reshape((x.shape[1].value, -1))(x)
-        x = tf.keras.layers.Flatten()(x)
-        return x
-
 class MaxPooling1D(Layer):
     def __init__(self, size, **kwargs):
         super(MaxPooling1D, self).__init__(**kwargs)
