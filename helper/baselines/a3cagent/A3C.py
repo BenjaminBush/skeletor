@@ -50,45 +50,15 @@ class A3C:
             x = conv_block(x, 32, (2, 2))
             x = Flatten()(x)
         else:
-            # CNN Score = 71, reward+=2 -> -72 (did not converge after 250)
-            # x = inp
-            # x = Reshape((self.env_dim[0], -1))(x)
-            # x = Conv1D(filters=32, kernel_size=8, strides=2)(x)
-            # x = BatchNormalization()(x)
-            # x = Activation("relu")(x)
-            # x = MaxPooling1D(pool_size=2)(x)
-            # x = Conv1D(filters=16, kernel_size=8, strides=2)(x)
-            # x = BatchNormalization()(x)
-            # x = Activation("relu")(x)
-            # x = MaxPooling1D(pool_size=2)(x)
-            # x = BatchNormalization()(x)
-            # x = Conv1D(filters=8, kernel_size=8, strides=1, padding="valid")(x)
-            # x = BatchNormalization()(x)
-            # x = Activation("relu")(x)
-            # x = Flatten()(x)
-            # x = Dropout(0.4)(x)
-            # x = Dense(128, activation='relu')(x)
-            # x = Reshape((backend.int_shape(x)[1], -1))(x)
-            # x = Flatten()(x)
 
-            # LSTM + reward +=2: Score = 143
-            # x = inp
-            # x = Reshape((self.env_dim[0], -1))(x)
-            # x = LSTM(256, activation='relu', return_sequences=True)(x)
-            # x = LSTM(128, activation='relu', return_sequences=True)(x)
-            # x = Dense(128, activation='relu')(x)
-            # x = Dropout(0.4)(x)
-            # x = Dense(64, activation='relu')(x)
-            # x = Reshape((backend.int_shape(x)[1], -1))(x)
-            # x = Flatten()(x)
-
-            # Dense (-34)
+            #DENSE
             # x = inp
             # x = Reshape((self.env_dim[0], -1))(x)
             # x = Dense(1024, activation='relu')(x)
             # x = Reshape((backend.int_shape(x)[1], -1))(x)
             # x = Flatten()(x)
 
+            # CNN
             x = inp
             x = Reshape((self.env_dim[0], -1))(x)
             x = Conv1D(filters=32, kernel_size=8, strides=2)(x)
@@ -105,14 +75,23 @@ class A3C:
             x = Activation("relu")(x)
             x = Flatten()(x)
             x = Dropout(0.4)(x)
-            x = Reshape((backend.int_shape(x)[1], -1))(x)
-            x = LSTM(1024, activation='relu', return_sequences=True)(x)
-            x = Dropout(0.2)(x)
-            x = Dense(128, activation='relu')(x)
+            x = Dense(256, activation='relu')(x)
             x = Reshape((backend.int_shape(x)[1], -1))(x)
             x = Flatten()(x)
 
-        return Model(inp, x)
+            # RNN
+            # x = inp
+            # x = Reshape((self.env_dim[0], -1))(x)
+            # x = LSTM(128, activation='relu', return_sequences=True)(x)
+            # x = Dense(128, activation='relu')(x)
+            # x = Dropout(0.4)(x)
+            # x = Dense(64, activation='relu')(x)
+            # x = Reshape((backend.int_shape(x)[1], -1))(x)
+            # x = Flatten()(x)
+
+        model = Model(inp, x)
+        print(model.summary())
+        return model
 
     def policy_action(self, s):
         """ Use the actor's network to predict the next action to take, using the policy
