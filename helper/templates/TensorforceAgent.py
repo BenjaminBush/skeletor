@@ -1,5 +1,5 @@
 from .Agent import Agent
-
+import time
 
 class TensorforceAgent(Agent):
     def __init__(self, observation_space, action_space, directory):
@@ -35,7 +35,7 @@ class TensorforceAgent(Agent):
                 episode_step_count += 1
             step_count += episode_step_count
             print('[train] Episode {:3} | Steps Taken: {:3} | Total Steps: Taken {:6}/{:6} | Total reward: {}'.format(
-                episode_count, episode_step_count, step_count, nb_steps, total_rew))
+            episode_count, episode_step_count, step_count, nb_steps, total_rew))
             episode_count += 1
         print('[train] Finished training')
 

@@ -49,7 +49,16 @@ class DictToListFull(EnvironmentWrapper):
         for info_type in ['joint_pos', 'joint_vel', 'joint_acc']:
             for joint in ['ankle_l', 'ankle_r', 'back', 'ground_pelvis',
                           'hip_l', 'hip_r', 'knee_l', 'knee_r']:
+#                if info_type == 'joint_pos' and joint == 
+#'ground_pelvis':
+#                    print(joint, len(res),res[len(res) - 1])
+#                     print(joint,  res[-7:-1])
+#                     print(joint, state_desc[info_type][joint])
                 res += state_desc[info_type][joint]
+#                if info_type == 'joint_pos':
+#                    print(joint, len(res), 
+#res[len(res) - 6: len(res) - 1])
+#                    print(joint, res[-7:-1])
 
         # Muscle Observations
         for muscle in ['abd_l', 'abd_r', 'add_l', 'add_r', 

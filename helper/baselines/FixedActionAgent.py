@@ -11,4 +11,5 @@ class FixedActionAgent(Agent):
         self.action = [0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0]
 
     def act(self, observation):
+        print(observation[201:207])
         return self.action
