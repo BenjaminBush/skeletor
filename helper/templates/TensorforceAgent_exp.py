@@ -4,7 +4,7 @@ from sklearn.linear_model import LinearRegression
 import pandas as pd
 from pandas import DataFrame, read_csv
 
-class TensorforceAgent(Agent):
+class TensorforceAgent_exp(Agent):
     def __init__(self, observation_space, action_space, directory):
         """
         Template class for agents using Keras RL library.
@@ -14,6 +14,9 @@ class TensorforceAgent(Agent):
         self.directory = directory
         self.agent = None
         self.shared_acts = [4,5,6,9,10,13,14,16]
+        self.shared_obs = [206,204,205,210,207,
+            211,208,212,209,214,213,216,215]
+
         self.frame = pd.read_csv('Experimental walking.csv', sep=';')
         act_frame = self.frame.drop(['Pelvic Tilt', 'Pelvic Up/Down Obl',
             'Pelvic Int/Ext Rot', 'Hip Flex/Ext', 'Hip Flex/Ext (L)', 'Hip Ad/Ab',
@@ -25,7 +28,8 @@ class TensorforceAgent(Agent):
         'hamstrings_l', 'bifemsh_r', 'bifemsh_l', 'tib_ant_l', 'gastroc_l'],
         axis=1)
         self.linreg = LinearRegression()
-        self.linreg.fit(obs_frame.get_values(), act_frame.get_values())
+        self.linreg.fit(obs_frame.values,
+            act_frame.values)  #both are transposed but it still works
         
 
     def train(self, env, nb_steps):
@@ -47,8 +51,11 @@ class TensorforceAgent(Agent):
             while not done:
                 action = self.agent.act(obs)
                 obs, rew, done, info = env.step(action)
-                predicted_action = predict_action(obs)
-                mod_rew += exp_comp(action, predicted_action, scaling = 100.0 - (step_count * 0.00002)                  total_rew += rew
+                predicted_action = self.predict_action(obs)
+                mod_rew = rew + self.exp_comp(self.shrink_act(action),
+                    predicted_action,
+                    scaling = 500.0 - (step_count * 0.001))
+                total_rew += rew
                 if step_count < 5000000:
                     self.agent.observe(reward=mod_rew, terminal=done)
                 else:
@@ -130,20 +137,22 @@ class TensorforceAgent(Agent):
         print('[submit] Submitted results successfully!')
 
     def act(self, obs):
-        return self.agent.act(obs)
+        my_act = self.agent.act(obs)
+        
+        return my_act
 
-    def shrink_act(vec): #hard-coded to remove actions we can't predict 
+    def shrink_act(self,vec):
         return [vec[i] for i in self.shared_acts]
 
-    def exp_comp(act_vec, exp_act_vec, scaling=1):
-        rmse = math.sqrt(sum([(act_vec[i] - exp_act_vec[i])**2]) / len(self.shared_acts))
+    def exp_comp(self,act_vec, exp_act_vec, scaling=1):
+        rmse = math.sqrt(sum([(act_vec[i] - exp_act_vec[0][i])**2 
+            for i in range(len(act_vec))]) / len(self.shared_acts))
         return ((1 - rmse) * scaling)
 
-    def predict_action(obs):
-        a = obs['joint_pos']
-        red_obs = [a['ground_pelvis'][5], a['ground_pelvis'][3],
-            a['ground_pelvis'][4], a['hip_r'][0], a['hip_l'][0], a['hip_r'][1],
-            a['hip_l'][1], a['hip_r'][2], a['hip_l'][2], a['knee_r'], a['knee_l'],
-            a['ankle_r'], a['ankle_l']]
-
-        return(self.linreg.predict(red_obs)
+    def predict_action(self,obs):
+        red_obs = [obs[i] for i in self.shared_obs]
+        for i in range(len(red_obs)):
+            red_obs[i] = red_obs[i]*(3.14/180)
+            if i in [0,1,5,6]:
+                red_obs[i] = red_obs[i] * -1
+        return(self.linreg.predict([red_obs]))
