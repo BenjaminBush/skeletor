@@ -27,8 +27,8 @@ class TensorforcePPOAgent_exp(TensorforceAgent_exp):
             action_space, directory='./TensorforcePPOAgent_exp/')
         # Create a Proximal Policy Optimization agent
         dense_network = []
-        dense_network.append(dict(type='dense', size=256))
-        dense_network.append(dict(type='dense', size=256))
+        dense_network.append(dict(type='dense', size=512))
+        dense_network.append(dict(type='dense', size=512))
 
         cnn_network = []
         cnn_network.append(dict(type='helper.baselines.tensorforce.TensorforcePPOAgent_exp.Reshape', target_shape=(observation_space.shape[0], 1)))
@@ -47,7 +47,7 @@ class TensorforcePPOAgent_exp(TensorforceAgent_exp):
             states=dict(type='float', shape=observation_space.shape),
             actions=dict(type='float', shape=action_space.shape,
                          min_value=0, max_value=1),
-            network=cnn_network,
+            network=dense_network,
             batching_capacity=1000,
             step_optimizer=dict(
                 type='adam',
