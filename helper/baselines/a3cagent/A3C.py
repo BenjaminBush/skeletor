@@ -52,32 +52,33 @@ class A3C:
         else:
 
             #DENSE
-            # x = inp
-            # x = Reshape((self.env_dim[0], -1))(x)
-            # x = Dense(1024, activation='relu')(x)
-            # x = Reshape((backend.int_shape(x)[1], -1))(x)
-            # x = Flatten()(x)
-
-            # CNN
             x = inp
             x = Reshape((self.env_dim[0], -1))(x)
-            x = Conv1D(filters=32, kernel_size=8, strides=2)(x)
-            x = BatchNormalization()(x)
-            x = Activation("relu")(x)
-            x = MaxPooling1D(pool_size=2)(x)
-            x = Conv1D(filters=16, kernel_size=8, strides=2)(x)
-            x = BatchNormalization()(x)
-            x = Activation("relu")(x)
-            x = MaxPooling1D(pool_size=2)(x)
-            x = BatchNormalization()(x)
-            x = Conv1D(filters=8, kernel_size=8, strides=1, padding="valid")(x)
-            x = BatchNormalization()(x)
-            x = Activation("relu")(x)
-            x = Flatten()(x)
-            x = Dropout(0.4)(x)
+            x = Dense(256, activation='relu')(x)
             x = Dense(256, activation='relu')(x)
             x = Reshape((backend.int_shape(x)[1], -1))(x)
             x = Flatten()(x)
+
+            # CNN
+            # x = inp
+            # x = Reshape((self.env_dim[0], -1))(x)
+            # x = Conv1D(filters=32, kernel_size=8, strides=2)(x)
+            # x = BatchNormalization()(x)
+            # x = Activation("relu")(x)
+            # x = MaxPooling1D(pool_size=2)(x)
+            # x = Conv1D(filters=16, kernel_size=8, strides=2)(x)
+            # x = BatchNormalization()(x)
+            # x = Activation("relu")(x)
+            # x = MaxPooling1D(pool_size=2)(x)
+            # x = BatchNormalization()(x)
+            # x = Conv1D(filters=8, kernel_size=8, strides=1, padding="valid")(x)
+            # x = BatchNormalization()(x)
+            # x = Activation("relu")(x)
+            # x = Flatten()(x)
+            # x = Dropout(0.4)(x)
+            # x = Dense(256, activation='relu')(x)
+            # x = Reshape((backend.int_shape(x)[1], -1))(x)
+            # x = Flatten()(x)
 
             # RNN
             # x = inp
