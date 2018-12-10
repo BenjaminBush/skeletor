@@ -65,6 +65,7 @@ class KerasNAFAgent(KerasAgent):
         x = Dense(((nb_actions * nb_actions + nb_actions) // 2))(x)
         x = Activation('sigmoid', name='L_final')(x)
         L_model = Model(inputs=[action_input, observation_input], outputs=x)
+        print(L_model.summary())
 
 
         # Setup Keras RL's NAFAgent

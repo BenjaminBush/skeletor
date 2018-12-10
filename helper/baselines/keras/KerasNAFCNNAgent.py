@@ -20,30 +20,36 @@ class KerasNAFCNNAgent(KerasAgent):
 
         V_model = Sequential()
         V_model.add(Flatten(input_shape=(1,) + observation_space.shape))
-        V_model.add(Reshape((14,25)))
-        V_model.add(Conv1D(filters=32, kernel_size=8, activation='relu'))
+        V_model.add(Dense(1024))
+        V_model.add(Activation('relu'))
+        V_model.add(Reshape((32,32)))
+        V_model.add(Conv1D(filters=32, kernel_size=4, activation='relu'))
         V_model.add(Dropout(0.1))
         V_model.add(MaxPooling1D(pool_size=2))
         V_model.add(Flatten())
         V_model.add(Dense(1024))
         V_model.add(Activation('relu'))
         V_model.add(Dense(1))
-        V_model.add(Activation('relu'))
+        V_model.add(Activation('tanh'))
+        print(V_model.summary())
 
 
         
 
         mu_model = Sequential()
         mu_model.add(Flatten(input_shape=(1,) + observation_space.shape))
-        mu_model.add(Reshape((14,25)))
-        mu_model.add(Conv1D(filters=32, kernel_size=8, activation='relu'))
+        mu_model.add(Dense(1024))
+        mu_model.add(Activation('relu'))
+        mu_model.add(Reshape((32,32)))
+        mu_model.add(Conv1D(filters=32, kernel_size=4, activation='relu'))
         mu_model.add(Dropout(0.1))
         mu_model.add(MaxPooling1D(pool_size=2))
         mu_model.add(Flatten())
         mu_model.add(Dense(1024))
         mu_model.add(Activation('relu'))
         mu_model.add(Dense(nb_actions))
-        mu_model.add(Activation('relu'))
+        mu_model.add(Activation('linear'))
+        print(mu_model.summary())
 
         
         
@@ -54,7 +60,7 @@ class KerasNAFCNNAgent(KerasAgent):
         x = concatenate([action_input, flattened_observation])
         x = Dense(1024)(x)
         x = Reshape((32,32))(x)
-        x = Conv1D(filters=32, kernel_size=8, activation='relu')(x)
+        x = Conv1D(filters=32, kernel_size=4, activation='relu')(x)
         x = Dropout(0.1)(x)
         x = MaxPooling1D(pool_size=2)(x)
         x = Flatten()(x)
@@ -64,6 +70,7 @@ class KerasNAFCNNAgent(KerasAgent):
         x = Dense(((nb_actions * nb_actions + nb_actions) // 2))(x)
         x = Activation('tanh', name='L_final')(x)
         L_model = Model(inputs=[action_input, observation_input], outputs=x)
+        print(L_model.summary())
 
 
         # Setup Keras RL's NAFAgent

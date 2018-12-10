@@ -20,7 +20,7 @@ class KerasDDPGRNNAgent(KerasAgent):
     def __init__(self, observation_space, action_space, filename='KerasDDPGRNNAgent.h5f'):
         nb_actions = action_space.shape[0]
 
-        lstm_out = 20  
+        lstm_out = 4
         # Actor network
         actor = Sequential()
         actor.add(Flatten(input_shape=(1,) + observation_space.shape))
@@ -36,7 +36,7 @@ class KerasDDPGRNNAgent(KerasAgent):
         flattened_observation = Flatten()(observation_input)
         x = concatenate([action_input, flattened_observation])
         x = Dense(1024)(x)
-        x = Activation('sigmoid')(x)
+        x = Activation('tanh')(x)
         x = Reshape((32,32))(x)
         x = LSTM(40, dropout_U = 0.2, dropout_W = 0.2)(x)
         x = Dense(1024,activation='softmax')(x)

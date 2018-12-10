@@ -1,1 +1,2 @@
 from .TensorforcePPOAgent import TensorforcePPOAgent
+from .TensorforceNAFAgent import TensorforceNAFAgent

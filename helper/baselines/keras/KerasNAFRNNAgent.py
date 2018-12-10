@@ -18,23 +18,29 @@ class KerasNAFRNNAgent(KerasAgent):
         nb_actions = action_space.shape[0]
         
 
-        lstm_out = 20  
+        lstm_out = 10
         V_model = Sequential()
         V_model.add(Flatten(input_shape=(1,) + observation_space.shape))
         V_model.add(Reshape((14,25)))
         V_model.add(LSTM(lstm_out, dropout_U = 0.2, dropout_W = 0.2))
-        V_model.add(Dense(1024,activation='softmax'))
+        V_model.add(Dense(1024,activation='relu'))
+        V_model.add(Dense(1024,activation='relu'))
+        V_model.add(Dense(1024,activation='relu'))
         V_model.add(Dense(1))
         V_model.add(Activation('relu'))
+        print(V_model.summary())
         
 
         mu_model = Sequential()
         mu_model.add(Flatten(input_shape=(1,) + observation_space.shape))
         mu_model.add(Reshape((14,25)))
         mu_model.add(LSTM(lstm_out, dropout_U = 0.2, dropout_W = 0.2))
-        mu_model.add(Dense(1024,activation='softmax'))
+        mu_model.add(Dense(1024,activation='relu'))
+        mu_model.add(Dense(1024,activation='relu'))
+        mu_model.add(Dense(1024,activation='relu'))
         mu_model.add(Dense(nb_actions))
         mu_model.add(Activation('relu'))
+        print(mu_model.summary())
 
         
         action_input = Input(shape=(nb_actions,), name='action_input')
@@ -43,15 +49,16 @@ class KerasNAFRNNAgent(KerasAgent):
         flattened_observation = Flatten()(observation_input)
         x = concatenate([action_input, flattened_observation])
         x = Dense(1024)(x)
-        x = Activation('sigmoid')(x)
+        x = Activation('relu')(x)
         x = Reshape((32,32))(x)
-        x = LSTM(40, dropout_U = 0.2, dropout_W = 0.2)(x)
-        x = Dense(1024,activation='softmax')(x)
+        x = LSTM(lstm_out, dropout_U = 0.2, dropout_W = 0.2)(x)
+        x = Dense(1024,activation='relu')(x)
         x = Dense(1024)(x)
-        x = Activation('sigmoid')(x)
+        x = Activation('relu')(x)
         x = Dense(((nb_actions * nb_actions + nb_actions) // 2))(x)
-        x = Activation('sigmoid', name='L_final')(x)
+        x = Activation('relu', name='L_final')(x)
         L_model = Model(inputs=[action_input, observation_input], outputs=x)
+        print(L_model.summary())
 
 
         # Setup Keras RL's NAFAgent

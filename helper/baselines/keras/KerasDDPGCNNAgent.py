@@ -34,7 +34,8 @@ class KerasDDPGCNNAgent(KerasAgent):
         actor.add(Dense(1024))
         actor.add(Activation('relu'))
         actor.add(Dense(nb_actions))
-        actor.add(Activation('sigmoid'))
+        actor.add(Activation('relu'))
+        print(actor.summary())
 
         # Critic network
         action_input = Input(shape=(nb_actions,), name='action_input')
@@ -51,7 +52,7 @@ class KerasDDPGCNNAgent(KerasAgent):
         x = Dense(64)(x)
         x = Activation('relu')(x)
         x = Dense(1)(x)
-        x = Activation('linear')(x)
+        x = Activation('relu')(x)
         critic = Model(inputs=[action_input, observation_input], outputs=x)
         print(critic.summary())
 
